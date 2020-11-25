@@ -16,8 +16,11 @@ Shooteroo::Shooteroo() : Application(ApplicationProps(
 
     std::string settingsPath = "settings.json";
 
-
+    #ifdef NDEBUG
     bool showSettings = false;
+    #else
+    bool showSettings = true;
+    #endif
     auto* layer = new Game(gameSettings, showSettings);
 
     pushLayer(layer);
