@@ -21,7 +21,13 @@ set(SHOOTEROO_FILES
     src/entities/Projectile.cpp
     src/entities/Projectile.h)
 
-add_executable(shooteroo ${SHOOTEROO_FILES})
+if(CMAKE_BUILD_TYPE STREQUAL Release)
+    message(STATUS "Using WIN32")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    add_executable(shooteroo WIN32 ${SHOOTEROO_FILES})
+else()
+    add_executable(shooteroo ${SHOOTEROO_FILES})
+endif()
 target_include_directories(shooteroo PUBLIC src)
 target_link_libraries(shooteroo PRIVATE JEngine)
 

@@ -28,9 +28,9 @@ __Keyboard__
 
 
 ###  Releases
-__Debug__: Logs more output to the console.
+__Debug__: Logs output to the console.
 
-__Release__: Logs less output to console (console will be remove entirely soon).  
+__Release__: No console, no output.  
 
 ### Mentions
 A lot of the engine code, is based of Hazel engine by @TheCherno and modified to fit my needs.
