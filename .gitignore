@@ -1,0 +1,5 @@
+# clion files
+.idea
+
+# cmake output folders
+build
