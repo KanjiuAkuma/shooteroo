@@ -30,7 +30,8 @@ __Keyboard__
 ###  Releases
 __Debug__: Logs output to the console, 
 has padding around game content view,
-shows settings by default.
+shows settings by default,
+does not spawn projectiles and hostiles by default.
 
 __Release__: No console.
 
