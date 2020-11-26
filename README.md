@@ -28,9 +28,11 @@ __Keyboard__
 
 
 ###  Releases
-__Debug__: Logs output to the console.
+__Debug__: Logs output to the console, 
+has padding around game content view,
+shows settings by default.
 
-__Release__: No console, no output.  
+__Release__: No console.
 
 ### Mentions
 A lot of the engine code, is based of Hazel engine by @TheCherno and modified to fit my needs.
