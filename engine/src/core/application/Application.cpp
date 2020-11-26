@@ -4,7 +4,7 @@
   **/
 
 #include <GLFW/glfw3.h>
-#include <core/window/Input.h>
+#include <core/events/MouseEvent.h>
 
 #include "Macros.h"
 #include "Application.h"
@@ -33,9 +33,15 @@ namespace Engine {
     void Application::run() {
         running = true;
         while (running) {
-            float time = (float) glfwGetTime();
-            float timestep = time - lastFrameTime;
-            lastFrameTime = time;
+            float timestep = 0;
+            if (hasFocus) {
+                float time = (float) glfwGetTime();
+                timestep = time - lastFrameTime;
+                lastFrameTime = time;
+            }
+            else {
+                lastFrameTime = (float) glfwGetTime();
+            }
 
             for (Layer* l : layerStack) {
                 l->onUpdate(timestep);
@@ -46,7 +52,6 @@ namespace Engine {
                 l->onImGuiRender();
             }
             imGuiLayer->end();
-
             window->onUpdate();
         }
     }
@@ -58,7 +63,11 @@ namespace Engine {
     void Application::onEvent(Event& e)
     {
         EventDispatcher dispatcher(e);
-        dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::onWindowClose));
+        dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::onWindowCloseEvent));
+        dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::onWindowResizeEvent));
+        dispatcher.dispatch<WindowFocusEvent>(BIND_EVENT_FN(Application::onWindowFocusEvent));
+        dispatcher.dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(Application::onMouseButtonPressedEvent));
+        dispatcher.dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(Application::onMouseButtonReleasedEvent));
 
         for (auto it = layerStack.rbegin(); it != layerStack.rend(); ++it)
         {
@@ -84,10 +93,44 @@ namespace Engine {
         layerStack.popOverlay(overlay);
     }
 
-    bool Application::onWindowClose(WindowCloseEvent& e)
+    bool Application::onWindowResizeEvent(WindowResizeEvent& e) {
+        LOG_DEBUG("Window resized: {} x {}", e.getWidth(), e.getHeight());
+        bool minimized = (e.getWidth() == 0 && e.getHeight() == 0);
+        if (minimized) {
+            wasMinimized = true;
+            hasFocus = false;
+        }
+        return false;
+    }
+
+    bool Application::onWindowFocusEvent(WindowFocusEvent& e) {
+        LOG_DEBUG("Window {}", e.isFocused() ? "focused" : "lost focus");
+        hasFocus = e.isFocused();
+        if (hasFocus && !wasMinimized) {
+            // just got focus
+            blockNextMouseButton = true;
+        }
+        wasMinimized = false;
+        return false;
+    }
+
+    bool Application::onWindowCloseEvent(WindowCloseEvent& e)
     {
+        hasFocus = false;
         running = false;
         return true;
+    }
+
+    bool Application::onMouseButtonReleasedEvent(MouseButtonReleasedEvent& e) {
+        if (blockNextMouseButton) {
+            blockNextMouseButton = false;
+            return true;
+        }
+        return false;
+    }
+
+    bool Application::onMouseButtonPressedEvent(MouseButtonPressedEvent& e) {
+        return blockNextMouseButton;
     }
 
 }

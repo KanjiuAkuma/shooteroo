@@ -189,6 +189,13 @@ namespace Engine {
             data.eventCallback(event);
         });
 
+        glfwSetWindowFocusCallback(window, [](GLFWwindow* window, int focused) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+            WindowFocusEvent event(focused);
+            data.eventCallback(event);-
+        });
+
         glfwShowWindow(window);
     }
 

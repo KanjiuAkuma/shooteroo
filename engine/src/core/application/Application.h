@@ -6,6 +6,7 @@
   **/
 
 #include <string>
+#include <core/events/MouseEvent.h>
 
 #include "core/layerStack/LayerStack.h"
 #include "core/imGuiLayer/ImGuiLayer.h"
@@ -47,11 +48,15 @@ namespace Engine {
         std::string name;
 
     private:
-        bool onWindowClose(WindowCloseEvent& e);
+        bool onMouseButtonPressedEvent(MouseButtonPressedEvent& e);
+        bool onMouseButtonReleasedEvent(MouseButtonReleasedEvent& e);
+        bool onWindowResizeEvent(WindowResizeEvent& e);
+        bool onWindowFocusEvent(WindowFocusEvent& e);
+        bool onWindowCloseEvent(WindowCloseEvent& e);
 
         std::unique_ptr<Window> window;
         LayerStack layerStack;
-        bool running;
+        bool running, hasFocus, wasMinimized = false, blockNextMouseButton = false;
         float lastFrameTime = 0.0f;
         ImGuiLayer* imGuiLayer;
 

@@ -2,7 +2,7 @@
 #include <functional>
 #include <string>
 
-#define BIT(x) (1 << x)
+#define BIT(x) (1u << x)
 
 namespace Engine {
 
@@ -14,25 +14,25 @@ namespace Engine {
 	enum class EventType
 	{
 		None = 0,
-		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
-		AppTick, AppUpdate, AppRender,
+		WindowClose, WindowResize, WindowFocus, WindowMoved,
 		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
 	enum EventCategory
 	{
-		None = 0,
-		EventCategoryApplication    = BIT(0),
-		EventCategoryInput          = BIT(1),
-		EventCategoryKeyboard       = BIT(2),
-		EventCategoryMouse          = BIT(3),
-		EventCategoryMouseButton    = BIT(4)
+		None = 0u,
+		EventCategoryApplication        = BIT(0u),
+		EventCategoryWindow             = BIT(1u),
+		EventCategoryInput              = BIT(2u),
+		EventCategoryKeyboard           = BIT(3u),
+		EventCategoryMouse              = BIT(4u),
+		EventCategoryMouseButton        = BIT(5u)
 	};
 
-#define EVENT_CLASS_TYPE(type) static EventType getStaticType() { return EventType::type; }\
-								virtual EventType getEventType() const override { return getStaticType(); }\
-								virtual const char* getName() const override { return #type; }
+#define EVENT_CLASS_TYPE(type) inline static EventType getStaticType() { return EventType::type; }\
+								inline virtual EventType getEventType() const override { return getStaticType(); }\
+								inline virtual const char* getName() const override { return #type; }
 
 #define EVENT_CLASS_CATEGORY(category) virtual int getCategoryFlags() const override { return category; }
 
@@ -48,7 +48,7 @@ namespace Engine {
 		virtual int getCategoryFlags() const = 0;
 		virtual std::string toString() const { return getName(); }
 
-		bool isInCategory(EventCategory category)
+		inline bool isInCategory(EventCategory category)
 		{
 			return getCategoryFlags() & category;
 		}
@@ -61,7 +61,7 @@ namespace Engine {
 		
 		// F will be deduced by the compiler
 		template<typename T, typename F>
-		bool dispatch(const F& func)
+		inline bool dispatch(const F& func)
 		{
 			if (event.getEventType() == T::getStaticType())
 			{
