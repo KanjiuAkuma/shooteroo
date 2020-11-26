@@ -21,19 +21,15 @@ namespace Engine {
         inline static glm::vec2 getMousePosition() { return instance->getMousePositionImpl(); }
         inline static float getMouseX() { return instance->getMouseXImpl(); }
         inline static float getMouseY() { return instance->getMouseYImpl(); }
-        inline static bool IsLeftMouseButtonDown() {
-            return instance->IsLeftMouseButtonDownImp();
-        }
-        inline static bool IsRightMouseButtonDown() {
-            return instance->IsRightMouseButtonDownImp();
-        }
+        inline static bool IsLeftMouseButtonDown() { return instance->IsLeftMouseButtonDownImp(); }
+        inline static bool IsRightMouseButtonDown() { return instance->IsRightMouseButtonDownImp(); }
 
     protected:
-        virtual glm::vec2 getMousePositionImpl() = 0;
-        virtual float getMouseXImpl() = 0;
-        virtual float getMouseYImpl() = 0;
-        virtual bool IsLeftMouseButtonDownImp() = 0;
-        virtual bool IsRightMouseButtonDownImp() = 0;
+        virtual glm::vec2 getMousePositionImpl() const = 0;
+        virtual float getMouseXImpl() const = 0;
+        virtual float getMouseYImpl() const = 0;
+        virtual bool IsLeftMouseButtonDownImp() const = 0;
+        virtual bool IsRightMouseButtonDownImp() const = 0;
 
     private:
         static Input* instance;

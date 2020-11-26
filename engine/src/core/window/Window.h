@@ -32,12 +32,31 @@ namespace Engine {
 
         virtual void onUpdate() = 0;
 
+        // window info
+        virtual int getPositionX() const = 0;
+        virtual int getPositionY() const = 0;
         virtual int getWidth() const = 0;
         virtual int getHeight() const = 0;
-        virtual glm::vec2 getWindowPosition() const = 0;
 
-        inline glm::vec2 getViewportSize() {
-            return glm::vec2(1.f, ((float) getHeight()) / ((float) getWidth()));
+        virtual glm::vec2 getWindowPosition() const {
+            return glm::vec2(getPositionX(), getPositionY());
+        };
+        virtual inline glm::vec2 getWindowSize() const {
+            return glm::vec2(getWidth(), getHeight());
+        }
+        virtual inline glm::vec2 getWindowRatio() const {
+            return glm::vec2(1.f, ((float) getHeight() / (float) getWidth()));
+        }
+
+        // viewport info
+        virtual int getViewportWidth() const = 0;
+        virtual int getViewportHeight() const = 0;
+        virtual inline glm::vec2 getViewportSize() const {
+            return glm::vec2(getViewportWidth(), getViewportHeight());
+        }
+
+        virtual inline glm::vec2 getViewportRatio() const {
+            return glm::vec2(1.f, ((float) getViewportHeight() / (float) getViewportWidth()));
         }
 
 

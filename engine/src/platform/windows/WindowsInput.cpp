@@ -13,7 +13,7 @@ namespace Engine {
 
     Input* Input::instance = new WindowsInput();
 
-    glm::vec2 WindowsInput::getMousePositionImpl() {
+    glm::vec2 WindowsInput::getMousePositionImpl() const {
         auto window = static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow());
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -23,28 +23,19 @@ namespace Engine {
                 1.f - 2.f * ((float) ypos) / ((float) Application::get().getWindow().getHeight()));
     }
 
-    float WindowsInput::getMouseXImpl() {
-        auto window = static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow());
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-
-        return -1.f + 2.f * ((float) xpos) / ((float) Application::get().getWindow().getWidth());
+    float WindowsInput::getMouseXImpl() const  {
+        return getMousePositionImpl().x;
     }
 
-    float WindowsInput::getMouseYImpl() {
-        auto window = static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow());
-        double xpos, ypos;
-        glfwGetCursorPos(window, &xpos, &ypos);
-        glm::vec2 screen = Application::get().getWindow().getViewportSize();
-
-        return 1.f - 2.f * ((float) ypos) / ((float) Application::get().getWindow().getHeight());
+    float WindowsInput::getMouseYImpl() const {
+        return getMousePositionImpl().y;
     }
 
-    bool WindowsInput::IsLeftMouseButtonDownImp() {
+    bool WindowsInput::IsLeftMouseButtonDownImp() const {
         return !ImGui::GetIO().WantCaptureMouse && glfwGetMouseButton(static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow()), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     }
 
-    bool WindowsInput::IsRightMouseButtonDownImp() {
+    bool WindowsInput::IsRightMouseButtonDownImp() const {
         return !ImGui::GetIO().WantCaptureMouse && glfwGetMouseButton(static_cast<GLFWwindow*>(Application::get().getWindow().getNativeWindow()), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
     }
 

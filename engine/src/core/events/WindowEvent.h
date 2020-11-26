@@ -6,6 +6,25 @@
 
 namespace Engine {
 
+    class WindowMovedEvent : public Event {
+    public:
+        inline WindowMovedEvent(int x, int y) : x(x), y(y) {}
+
+        inline std::string toString() const override  {
+            std::stringstream ss;
+            ss << "WindowMovedEvent: " << x << ", " << y;
+            return ss.str();
+        }
+
+        inline int getPositionX() const { return x; }
+        inline int getPositionY() const { return y; }
+
+        EVENT_CLASS_TYPE(WindowMoved);
+        EVENT_CLASS_CATEGORY(EventCategoryWindow);
+    private:
+        int x, y;
+    };
+
 	class WindowResizeEvent : public Event
 	{
 	public:
@@ -41,7 +60,7 @@ namespace Engine {
 	public:
 	    inline explicit WindowFocusEvent(bool focused) : focused(focused) {}
 
-	    inline bool isFocused() { return focused; }
+	    inline bool isFocused() const { return focused; }
 
 	    inline std::string toString() const override {
 	        std::stringstream ss;

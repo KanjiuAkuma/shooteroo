@@ -100,11 +100,25 @@ namespace Engine {
         setVsync(props.vsync);
 
         // Set GLFW callbacks
+
+        glfwSetWindowPosCallback(window, [](GLFWwindow* window, int xpos, int ypos) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+            data.positionX = xpos;
+            data.positionY = ypos;
+
+            WindowMovedEvent event(xpos, ypos);
+            data.eventCallback(event);
+        });
+
         glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
         {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
             data.width = width;
             data.height = height;
+
+            // update glViewport
+            glfwGetFramebufferSize(window, &data.viewportWidth, &data.viewportHeight);
+            GL_CALL(glViewport(0, 0, data.viewportWidth, data.viewportHeight));
 
             WindowResizeEvent event(width, height);
             data.eventCallback(event);
@@ -193,7 +207,7 @@ namespace Engine {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
             WindowFocusEvent event(focused);
-            data.eventCallback(event);-
+            data.eventCallback(event);
         });
 
         glfwShowWindow(window);

@@ -18,7 +18,7 @@ set(ENGINE_FILES
     src/core/window/Input.h
     src/core/window/Window.h
     src/core/events/Event.h
-    src/core/events/ApplicationEvent.h
+    src/core/events/WindowEvent.h
     src/core/events/KeyEvent.h
     src/core/events/MouseEvent.h
     src/platform/windows/WindowsInput.cpp

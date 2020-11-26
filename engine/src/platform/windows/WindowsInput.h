@@ -12,13 +12,13 @@ namespace Engine {
     class WindowsInput : public Input {
 
     protected:
-        virtual glm::vec2 getMousePositionImpl() override;
+        virtual glm::vec2 getMousePositionImpl() const override;
 
-        virtual float getMouseXImpl() override;
-        virtual float getMouseYImpl() override;
+        virtual float getMouseXImpl() const override;
+        virtual float getMouseYImpl() const override;
 
-        bool IsLeftMouseButtonDownImp() override;
-        bool IsRightMouseButtonDownImp() override;
+        bool IsLeftMouseButtonDownImp() const override;
+        bool IsRightMouseButtonDownImp() const override;
 
     };
 

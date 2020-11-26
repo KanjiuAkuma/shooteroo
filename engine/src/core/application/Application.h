@@ -12,7 +12,7 @@
 #include "core/imGuiLayer/ImGuiLayer.h"
 #include "core/window/Window.h"
 #include "core/events/Event.h"
-#include "core/events/ApplicationEvent.h"
+#include "core/events/WindowEvent.h"
 
 namespace Engine {
 
