@@ -54,8 +54,10 @@ public:
     static glm::vec2 mainAxis;
 
 private:
-    bool awaitPlay, running, showSettings, spawnHostiles, spawnProjectiles, renderHitbox, showHelp = false;
-    float score = 0;
+    bool awaitPlay, running,
+        showSettings, spawnHostiles, spawnProjectiles, renderHitbox,
+        showHelp = false, invulnerable = false;
+    float score = 0, dtMultiplier = 1.f;
 
     GameSettings* gameSettings;
 

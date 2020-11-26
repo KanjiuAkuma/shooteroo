@@ -18,6 +18,13 @@
 #include <EngineUtil.h>
 
 #define SPACE(h) ImGui::Dummy(ImVec2(0.f, h))
+#define BOARD_DIMENSION 1e3f
+
+#ifdef NDEBUG
+#define SCREEN_PADDING 0.f
+#else
+#define SCREEN_PADDING .05f
+#endif
 
 Game* Game::instance = nullptr;
 glm::vec2 Game::mainAxis = glm::vec2(1, 0);
@@ -211,6 +218,7 @@ void Game::OnEvent(Event& e) {
 }
 
 void Game::onUpdate(float dt) {
+    dt *= dtMultiplier;
     // only update if game is running
     if (running && !showHelp) {
         // update player
@@ -222,28 +230,33 @@ void Game::onUpdate(float dt) {
             hostile->onUpdate(dt);
             if (glm::length(player->getPosition() - hostile->getPosition()) < player->getSize() + hostile->getSize()) {
                 // player got hit, game over
-                LOG_DEBUG("Game over, player died to a hostile");
-                running = false;
-                break;
+                if (!invulnerable) {
+                    LOG_DEBUG("Game over, player died to a hostile");
+                    running = false;
+                    break;
+                }
             }
         }
 
         // update projectiles and check if player dies
+        glm::vec2 screenBounds((1.1f - SCREEN_PADDING) * (float) Engine::Application::get().getWindow().getViewportWidth() / BOARD_DIMENSION,
+                               (1.1f - SCREEN_PADDING) * (float) Engine::Application::get().getWindow().getViewportHeight() / BOARD_DIMENSION);
         for (auto& projectile : projectiles) {
             projectile->onUpdate(dt);
             if (glm::length(player->getPosition() - projectile->getPosition()) <
                 player->getSize() + projectile->getSize()) {
                 // player got hit, game over
-                LOG_DEBUG("Game over, player died to a projectile");
-                running = false;
-                break;
+                if (!invulnerable) {
+                    LOG_DEBUG("Game over, player died to a projectile");
+                    running = false;
+                    break;
+                }
             }
 
             // check if projectile left the screen
-            glm::vec2 pos = projectile->getPosition();
-            float size = projectile->getSize();
+            glm::vec2 pos = glm::abs(projectile->getPosition()) - projectile->getSize();
 
-            if (pos.x + size < -1.f || 1.f < pos.x - size || pos.y + size < -1.f || 1.f < pos.y - size) {
+            if (screenBounds.x < pos.x || screenBounds.y < pos.y) {
                 removeProjectile(projectile);
             }
         }
@@ -297,26 +310,33 @@ void Game::onUpdate(float dt) {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // bind player shader
+    // bind entity shader
     GL_CALL(glUseProgram(shader->getRendererID()));
-
-    // calc and push proj matrix
-    glm::vec2 viewportSize = Engine::Application::get().getWindow().getViewportSize();
 
     // bind vertex array, vertex buffer, index buffer
     GL_CALL(glBindVertexArray(quadVA))
     GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadVB))
     GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadIB))
 
-    int texLocation = glGetUniformLocation(shader->getRendererID(), "u_texture");
+    // get tex uniform locations
     int projLocation = glGetUniformLocation(shader->getRendererID(), "u_proj");
+    int texLocation = glGetUniformLocation(shader->getRendererID(), "u_texture");
 
-    GL_CALL(glUniformMatrix4fv(projLocation, 1, GL_FALSE, glm::value_ptr(
-            glm::scale(glm::mat4(1.f), glm::vec3(1.f / viewportSize.x, 1.f / viewportSize.y, 1.f)))));
+    GL_CALL(glUniformMatrix4fv(projLocation, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.f))));
 
     grassTex->bind(0);
     GL_CALL(glUniform1i(texLocation, 0))
     renderBackground();
+
+    // calc and push proj matrix
+    glm::vec2 viewportSize = Engine::Application::get().getWindow().getViewportSize();
+    GL_CALL(glUniformMatrix4fv(projLocation, 1, GL_FALSE, glm::value_ptr(
+            glm::scale(glm::mat4(1.f),
+                       glm::vec3(
+                               BOARD_DIMENSION / Application::get().getWindow().getViewportWidth(),
+                               BOARD_DIMENSION / Application::get().getWindow().getViewportHeight(),
+                               1.f
+                       )))));
 
     // for debugging: render all elements with background texture
     if (renderHitbox) {
@@ -363,18 +383,21 @@ void Game::onUpdate(float dt) {
 }
 
 void Game::spawnProjectile() {
+    glm::vec2 scale((1.f - SCREEN_PADDING) * (float) Engine::Application::get().getWindow().getViewportWidth() / BOARD_DIMENSION,
+                    (1.f - SCREEN_PADDING) * (float) Engine::Application::get().getWindow().getViewportHeight() / BOARD_DIMENSION);
     static std::default_random_engine e;
     static std::uniform_real_distribution<float> dis;
 
     // spawn projectile
     float size = gameSettings->projectileSettings.size;
 
-    float rxy = dis(e);
-    float ra = -size + dis(e) * (2.f + size);
-    float fa = (1.f + size) * (dis(e) < .5f ? -1.f : 1.f);
-    glm::vec2 pos = rxy < .5f ? glm::vec2(ra, fa) : glm::vec2(fa, ra);
-    glm::vec2 dir = glm::normalize(player->getPosition() - pos);
+    float ra = (1.f + size) * (2.f * dis(e) - 1.f);
+    float fa = (1.f + size) * (dis(e) <= .5f ? -1.f : 1.f);
+    glm::vec2 pos = dis(e) <= .5f ? glm::vec2(ra, fa) : glm::vec2(fa, ra);
+    pos.x *= scale.x;
+    pos.y *= scale.y;
 
+    glm::vec2 dir = glm::normalize(player->getPosition() - pos);
     float omega = -4.f + dis(e) * 8.f;
 
     LOG_DEBUG("Spawning projectile size={}, direction=[{}, {}], pos=[{}, {}]", size, dir.x, dir.y, pos.x, pos.y);
@@ -386,6 +409,8 @@ void Game::spawnProjectile() {
 }
 
 void Game::spawnHostile() {
+    glm::vec2 scale((1.f - SCREEN_PADDING) * (float) Engine::Application::get().getWindow().getViewportWidth() / BOARD_DIMENSION,
+                    (1.f - SCREEN_PADDING) * (float) Engine::Application::get().getWindow().getViewportHeight() / BOARD_DIMENSION);
     static std::default_random_engine e;
     static std::uniform_real_distribution<float> dis;
 
@@ -395,10 +420,11 @@ void Game::spawnHostile() {
     const float* speed = &gameSettings->hostileSettings.speed;
     float sizeV = *size;
 
-    float rxy = dis(e);
-    float ra = -sizeV + dis(e) * (1.f + sizeV);
-    float fa = 1.f + sizeV * (dis(e) < .5 ? -1.f : 1.f);
-    glm::vec2 pos = rxy < .5 ? glm::vec2(ra, fa) : glm::vec2(fa, ra);
+    float ra = -(1.f + sizeV) + dis(e) * 2.f * (1.f + sizeV);
+    float fa = (1.f + sizeV) * (dis(e) < .5 ? -1.f : 1.f);
+    glm::vec2 pos = dis(e) <= .5f ? glm::vec2(ra, fa) : glm::vec2(fa, ra);
+    pos.x *= scale.x;
+    pos.y *= scale.y;
     LOG_DEBUG("Spawning hostile size={}, speed={}, pos=[{}, {}]", *size, *speed, pos.x, pos.y);
 
     auto* hostile = new Hostile(&gameSettings->hostileSettings, small, pos, player->getPosition());
@@ -406,9 +432,8 @@ void Game::spawnHostile() {
 }
 
 void Game::renderBackground() {
-    glm::vec2 viewportSize = Engine::Application::get().getWindow().getViewportSize();
-    float width = viewportSize.x;
-    float height = viewportSize.y;
+    float width = 1.f - BOARD_DIMENSION * SCREEN_PADDING / (float) Engine::Application::get().getWindow().getViewportWidth();
+    float height = 1.f - BOARD_DIMENSION * SCREEN_PADDING / (float) Engine::Application::get().getWindow().getViewportHeight();
 
     EntityVertex vertices[4] = {
             glm::vec2(-width, -height), glm::vec2(0), glm::vec2(0, 0),
@@ -452,7 +477,8 @@ void Game::onImGuiRender() {
     // set up score window
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
     ImGui::SetNextWindowSize(ImVec2(270.f, 45.f + (running ? 0.f : 20.f)));
-    ImGui::Begin("Shooteroo", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+    ImGui::Begin("Shooteroo", nullptr,
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
 
     ImGui::Text("Press H to show help. %.1f FPS", ImGui::GetIO().Framerate);
     ImGui::Text("Score: %.2f (Best: %.2f)", score, gameSettings->scoreSettings.highscore);
@@ -481,10 +507,12 @@ void Game::onImGuiRender() {
         ImGui::SetNextWindowSize(ImVec2(helpWindowWidth, helpWindowHeight));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.f, 1.f));
 
-        ImGui::Begin("Help", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
+        ImGui::Begin("Help", nullptr,
+                     ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs);
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(.7, 1, .9, 1));
-        ImGui::Dummy(ImVec2(130, 0)); ImGui::SameLine(),
-        ImGui::Text("Shooteroo by Kami-Kaze");
+        ImGui::Dummy(ImVec2(130, 0));
+        ImGui::SameLine(),
+                ImGui::Text("Shooteroo by Kami-Kaze");
         ImGui::PopStyleColor();
         SPACE(2.f);
         ImGui::Separator();
@@ -511,23 +539,26 @@ void Game::onImGuiRender() {
         ImGui::PopStyleVar();
         ImGui::PopStyleColor(2);
     }
-    
+
 
     if (showSettings) {
         ImGui::Begin("Settings");
         if (ImGui::BeginTabBar("TabBarName???")) {
             if (ImGui::BeginTabItem("General")) {
-                if (ImGui::Button("Reset settings")) {
-                    gameSettings->reset();
-                }
+                ImGui::Checkbox("Invulnerable", &invulnerable);
+                ImGui::SameLine();
                 if (ImGui::Button("Restart Game")) {
                     running = false;
                     awaitPlay = true;
                     reset();
                 }
+                ImGui::DragFloat("Time multiplier", &dtMultiplier, 0.01f, .001f, 1.f);
                 ImGui::DragFloat("Time increment", &gameSettings->scoreSettings.timeIncrement, .2, 0, 5);
                 ImGui::DragFloat("Kill increment", &gameSettings->scoreSettings.killIncrement, .5, 0, 10);
                 ImGui::Checkbox("Render hitboxes", &renderHitbox);
+                if (ImGui::Button("Reset settings")) {
+                    gameSettings->reset();
+                }
                 ImGui::EndTabItem();
             }
 
@@ -641,12 +672,14 @@ bool Game::onMouseButtonPressed(MouseButtonPressedEvent& e) {
         if (showHelp) {
             showHelp = false;
         }
-    }
-    else if (running) {
+    } else if (running) {
+        glm::vec2 pos = Input::getMousePosition();
+        pos.x *= (1.f) * (float) Engine::Application::get().getWindow().getViewportWidth() / BOARD_DIMENSION;
+        pos.y *= (1.f) * (float) Engine::Application::get().getWindow().getViewportHeight() / BOARD_DIMENSION;
         if (e.getMouseButton() == Mouse::Button1) {
-            player->setTargetLocation(Input::getMousePosition());
+            player->setTargetLocation(pos);
         } else if (e.getMouseButton() == Mouse::Button0) {
-            player->shoot(glm::normalize(Input::getMousePosition() - player->getPosition()));
+            player->shoot(glm::normalize(pos - player->getPosition()));
         }
     } else if (e.getMouseButton() == Mouse::Button0) {
         if (awaitPlay) {

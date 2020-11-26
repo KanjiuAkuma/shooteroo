@@ -18,8 +18,10 @@ Shooteroo::Shooteroo() : Application(ApplicationProps(
 
     #ifdef NDEBUG
     bool showSettings = false;
+    float screenPadding = 0.f;
     #else
     bool showSettings = true;
+    float screenPadding = .05f;
     #endif
     auto* layer = new Game(gameSettings, showSettings);
 
