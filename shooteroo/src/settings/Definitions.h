@@ -62,19 +62,19 @@ const Section playerDefaults = {
 
 const Section weaponDefaults = {
         {"cooldown", "0.2"},
-        {"p_range",  "0.75"},
+        {"p_range",  "0.9"},
         {"p_size",   "0.009"},
-        {"p_speed",  "1.1"},
+        {"p_speed",  "1.3"},
 };
 
 const Section projectilesDefaults = {
-        {"probability", "0.7"},
-        {"size",        "0.05"},
-        {"speed",       "0.65"},
+        {"probability", "0.765"},
+        {"size",        "0.04"},
+        {"speed",       "0.62"},
 };
 
 const Section hostileDefaults = {
-        {"probability", "0.5"},
+        {"probability", "0.55"},
         {"size_small",  "0.055"},
         {"size_big",    "0.06"},
         {"speed",       "0.5"},
