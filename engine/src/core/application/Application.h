@@ -56,7 +56,7 @@ namespace Engine {
 
         std::unique_ptr<Window> window;
         LayerStack layerStack;
-        bool running, hasFocus, wasMinimized = false, blockNextMouseButton = false;
+        bool running, hasFocus, wasMinimized = true, blockNextMouseButton = false;
         float lastFrameTime = 0.0f;
         ImGuiLayer* imGuiLayer;
 
