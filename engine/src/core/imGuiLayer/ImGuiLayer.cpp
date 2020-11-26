@@ -23,10 +23,11 @@ namespace Engine {
         ImGui::CreateContext();
 
         ImGuiIO& io = ImGui::GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-        io.ConfigDockingWithShift = false;                          // Disable shift for docking
+
+        // ToDo: Make this configurable (probably via WindowProps)
+        // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+        // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+        // io.ConfigDockingWithShift = false;                          // Disable shift for docking
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();

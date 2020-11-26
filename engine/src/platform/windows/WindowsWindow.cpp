@@ -58,6 +58,10 @@ namespace Engine {
         if (props.fullScreen) {
             width = videoMode->width;
             height = videoMode->height;
+            data.positionX = 0;
+            data.positionY = 0;
+            data.viewportWidth = width;
+            data.viewportHeight = height;
 
             glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
@@ -66,6 +70,8 @@ namespace Engine {
         else {
             width = props.width;
             height = props.height;
+            data.positionX = (videoMode->width - props.width) / 2;
+            data.positionY = (videoMode->height - props.height) / 2;
             LOG_INFO("Window ({}:{})", width, height);
         }
 
@@ -79,7 +85,7 @@ namespace Engine {
         window = glfwCreateWindow(width, height, data.name.c_str(), nullptr, nullptr);
 
         if (!props.fullScreen) {
-            glfwSetWindowPos(window, (videoMode->width - props.width) / 2, (videoMode->height - props.height) / 2);
+            glfwSetWindowPos(window, data.positionX, data.positionY);
         }
 
         glfwMakeContextCurrent(window);
