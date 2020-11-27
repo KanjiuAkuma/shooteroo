@@ -558,17 +558,17 @@ void Game::renderCooldowns() {
     ImGui::SameLine();
     ImGui::Text("Shoot");
     ImGui::SameLine();
-    ImGui::Dummy(ImVec2(cooldownPadding.x + 5.f, 0.f));
+    ImGui::Dummy(ImVec2(cooldownPadding.x + 8.f, 0.f));
     ImGui::SameLine();
     ImGui::Text("Boost");
     ImGui::SameLine();
-    ImGui::Dummy(ImVec2(cooldownPadding.x + 12.f, 0.f));
-    ImGui::SameLine();
-    ImGui::Text("Ult");
-    ImGui::SameLine();
-    ImGui::Dummy(ImVec2(cooldownPadding.x + 12.f, 0.f));
+    ImGui::Dummy(ImVec2(cooldownPadding.x + 3.f, 0.f));
     ImGui::SameLine();
     ImGui::Text("Flash");
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(cooldownPadding.x + 10.f, 0.f));
+    ImGui::SameLine();
+    ImGui::Text("Ult");
 
     ImGui::PopStyleVar();
 
@@ -594,6 +594,12 @@ void Game::renderCooldowns() {
                                       gameSettings->playerSettings.boostCooldown);
     }
 
+    // flash
+    cooldownPosition.x += cooldownSize.x + cooldownPadding.x;
+    renderCooldownIndicator(cooldownPosition, cooldownSize,
+                            1.f - player->flashCooldown /
+                                  gameSettings->playerSettings.flashCooldown);
+
     // ult
     cooldownPosition.x += cooldownSize.x + cooldownPadding.x;
     if (player->ulting) {
@@ -605,12 +611,6 @@ void Game::renderCooldowns() {
                                 1.f - player->ultCooldown /
                                       gameSettings->playerSettings.ultCooldown);
     }
-
-    // flash
-    cooldownPosition.x += cooldownSize.x + cooldownPadding.x;
-    renderCooldownIndicator(cooldownPosition, cooldownSize,
-                            1.f - player->flashCooldown /
-                                  gameSettings->playerSettings.flashCooldown);
 
 
     ImGui::End();
