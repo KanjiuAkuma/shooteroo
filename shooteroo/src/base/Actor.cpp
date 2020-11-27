@@ -13,7 +13,6 @@
 
 #define PI  3.14159265359f
 #define TAU 6.28318530718f
-#define MOD(x, y) x - std::floor(x / y) * y
 
 Actor::Actor(const std::string& debugName, const float* size, const float* speed, const float* turningSpeed,
              glm::vec2 initialPosition, float orientation) :
@@ -48,7 +47,7 @@ void Actor::onUpdate(float dt) {
 
         if (1.e-9 < abs(targetOrientation - orientation)) turning = true;
         float distance = glm::length(dx);
-        float vt = (*speed) * dt;
+        float vt = getSpeed() * dt;
 
         if (vt < distance) {
             position += glm::normalize(dx) * vt;
@@ -97,4 +96,8 @@ float Actor::getOrientation() const {
 
 float Actor::getSize() const {
     return *size;
+}
+
+float Actor::getSpeed() const {
+    return *speed;
 }

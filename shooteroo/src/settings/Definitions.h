@@ -58,10 +58,19 @@ const Section playerDefaults = {
         {"size",  "0.06"},
         {"speed", "0.4"},
         {"turning_speed", "0.5"},
+        {"flash_cooldown", "10.0"},
+        {"flash_distance", "0.3"},
+        {"boost_cooldown", "2.5"},
+        {"boost_duration", "1.0"},
+        {"boost_speed_mod", "1.4"},
+        {"ult_cooldown", "60.0"},
+        {"ult_duration", "3.0"},
+        {"ult_cooldown_mod", "1.8"},
+        {"ult_speed_mod", "1.6"}
 };
 
 const Section weaponDefaults = {
-        {"cooldown", "0.2"},
+        {"cooldown", "0.3"},
         {"p_range",  "0.9"},
         {"p_size",   "0.009"},
         {"p_speed",  "1.3"},

@@ -18,11 +18,23 @@ public:
 
     void onUpdate(float dt) override;
 
-    void shoot(glm::vec2 direction);
+    void shoot(glm::vec2 targetLocation);
+
+    void boost();
+
+    void ult();
+
+    void flash(glm::vec2 direction);
+
+    float getSpeed() const override;
+    bool isInvulnerable();
 
 private:
     const PlayerSettings* settings;
-    float weaponCooldown = 0;
+    bool boosting = false, ulting = false;
+    float weaponCooldown = 0, flashCooldown = 0,
+            boostRemaining = 0, boostCooldown = 0,
+            ultCooldown = 0, ultRemaining = 0;
 
     friend Game;
 };

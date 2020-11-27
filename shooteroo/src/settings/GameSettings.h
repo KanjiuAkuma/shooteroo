@@ -17,14 +17,18 @@ struct TextureSettings {
 
 struct WeaponSettings {
     TextureSettings texture;
-    float cooldown, pRange, pSize, pSpeed;
+    float cooldown,
+            pRange, pSize, pSpeed;
 };
 
 struct PlayerSettings {
     TextureSettings texture;
     WeaponSettings weaponSettings;
 
-    float size, speed, turningSpeed;
+    float size, speed, turningSpeed,
+            flashCooldown, flashDistance,
+            boostCooldown, boostDuration, boostSpeedMod,
+            ultCooldown, ultDuration, ultSpeedMod, ultCooldownMod;
 };
 
 struct ProjectileSettings {
@@ -34,7 +38,9 @@ struct ProjectileSettings {
 
 struct HostileSettings {
     TextureSettings texture;
-    float probability, sizeSmall, sizeBig, speed, turningSpeed;
+    float probability,
+            sizeSmall, sizeBig,
+            speed, turningSpeed;
 };
 
 struct ScoreSettings {
@@ -47,6 +53,7 @@ class Game;
 class GameSettings {
 public:
     explicit GameSettings(const std::string& filePath);
+
     ~GameSettings();
 
     void reset();

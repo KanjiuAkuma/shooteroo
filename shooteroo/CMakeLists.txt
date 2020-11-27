@@ -62,6 +62,7 @@ add_custom_target(create_zip
                   DEPENDS
                   ${CMAKE_CURRENT_BINARY_DIR}_dummy_zip
                   ${CMAKE_CURRENT_BINARY_DIR}/resources
-                  ${CMAKE_CURRENT_BINARY_DIR}/shooteroo_${BUILD_CONFIG}.zip)
+                  ${CMAKE_CURRENT_BINARY_DIR}/shooteroo_${BUILD_CONFIG}.zip
+                  shooteroo)
 
-add_dependencies(shooteroo create_zip copy_resources)
+add_dependencies(shooteroo copy_resources)

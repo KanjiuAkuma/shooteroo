@@ -85,6 +85,10 @@ private:
     void renderBackground();
     void renderEntity(const Entity* entity, const TextureSettings* textureSettings);
 
+    void renderScore();
+    void renderCooldowns();
+    void renderSettings();
+
     void setPaused(bool paused);
 
 };

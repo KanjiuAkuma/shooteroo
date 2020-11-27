@@ -32,6 +32,8 @@ public:
 
     virtual float getSize() const override;
 
+    virtual float getSpeed() const;
+
 protected:
     const float *size, *speed, *turningSpeed;
     float orientation, targetOrientation;

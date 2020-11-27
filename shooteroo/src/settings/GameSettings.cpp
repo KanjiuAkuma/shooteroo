@@ -51,6 +51,15 @@ GameSettings::GameSettings(const std::string& filePath) : settingsFile(filePath)
             LOAD_FLOAT(ini, "player", "size"),
             LOAD_FLOAT(ini, "player", "speed"),
             LOAD_FLOAT(ini, "player", "turning_speed"),
+            LOAD_FLOAT(ini, "player", "flash_cooldown"),
+            LOAD_FLOAT(ini, "player", "flash_distance"),
+            LOAD_FLOAT(ini, "player", "boost_cooldown"),
+            LOAD_FLOAT(ini, "player", "boost_duration"),
+            LOAD_FLOAT(ini, "player", "boost_speed_mod"),
+            LOAD_FLOAT(ini, "player", "ult_cooldown"),
+            LOAD_FLOAT(ini, "player", "ult_duration"),
+            LOAD_FLOAT(ini, "player", "ult_speed_mod"),
+            LOAD_FLOAT(ini, "player", "ult_cooldown_mod"),
     };
     projectileSettings = {
             LOAD_TEXTURE(ini, projectile),
@@ -92,6 +101,15 @@ GameSettings::~GameSettings() {
     WRITE_FLOAT(ini, "player", "size", playerSettings.size);
     WRITE_FLOAT(ini, "player", "speed", playerSettings.speed);
     WRITE_FLOAT(ini, "player", "turning_speed", playerSettings.turningSpeed);
+    WRITE_FLOAT(ini, "player", "flash_cooldown", playerSettings.flashCooldown);
+    WRITE_FLOAT(ini, "player", "flash_distance", playerSettings.flashDistance);
+    WRITE_FLOAT(ini, "player", "boost_cooldown", playerSettings.boostCooldown);
+    WRITE_FLOAT(ini, "player", "boost_duration", playerSettings.boostDuration);
+    WRITE_FLOAT(ini, "player", "boost_speed_mod", playerSettings.boostSpeedMod);
+    WRITE_FLOAT(ini, "player", "ult_cooldown", playerSettings.ultCooldown);
+    WRITE_FLOAT(ini, "player", "ult_duration", playerSettings.ultDuration);
+    WRITE_FLOAT(ini, "player", "ult_speed_mod", playerSettings.ultSpeedMod);
+    WRITE_FLOAT(ini, "player", "ult_cooldown_mod", playerSettings.ultCooldownMod);
 
     WRITE_FLOAT(ini, "projectile", "probability", projectileSettings.probability);
     WRITE_FLOAT(ini, "projectile", "size", projectileSettings.size);
@@ -152,6 +170,15 @@ void GameSettings::reset() {
             LOAD_FLOAT(ini, "player", "size"),
             LOAD_FLOAT(ini, "player", "speed"),
             LOAD_FLOAT(ini, "player", "turning_speed"),
+            LOAD_FLOAT(ini, "player", "flash_cooldown"),
+            LOAD_FLOAT(ini, "player", "flash_distance"),
+            LOAD_FLOAT(ini, "player", "boost_cooldown"),
+            LOAD_FLOAT(ini, "player", "boost_duration"),
+            LOAD_FLOAT(ini, "player", "boost_speed_mod"),
+            LOAD_FLOAT(ini, "player", "ult_cooldown"),
+            LOAD_FLOAT(ini, "player", "ult_duration"),
+            LOAD_FLOAT(ini, "player", "ult_speed_mod"),
+            LOAD_FLOAT(ini, "player", "ult_cooldown_mod"),
     };
     projectileSettings = {
             LOAD_TEXTURE(ini, projectile),
