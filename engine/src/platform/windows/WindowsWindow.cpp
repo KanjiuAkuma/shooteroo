@@ -102,7 +102,7 @@ namespace Engine {
 
         if (props.multisample) {
             LOG_INFO("Enabling gl multisample");
-            glEnable(GL_MULTISAMPLE);
+            GL_CALL(glEnable(GL_MULTISAMPLE));
         }
 
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

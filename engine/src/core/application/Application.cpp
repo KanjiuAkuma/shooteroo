@@ -4,11 +4,11 @@
   **/
 
 #include <GLFW/glfw3.h>
-#include <core/events/MouseEvent.h>
 
 #include "Macros.h"
 #include "Application.h"
 #include "core/logger/Logger.h"
+#include "core/events/MouseEvent.h"
 
 namespace Engine {
 
