@@ -35,32 +35,34 @@ message(STATUS "build config ${BUILD_CONFIG}")
 target_include_directories(shooteroo PUBLIC src)
 target_link_libraries(shooteroo PRIVATE JEngine)
 
-# what a mess... copy resources and create release zips
+set(OUT_DIRECTORY ${CMAKE_SOURCE_DIR}/out)
+file(MAKE_DIRECTORY ${OUT_DIRECTORY})
+
+message(${OUT_DIRECTORY})
+
 add_custom_command(OUTPUT
-                   ${CMAKE_CURRENT_BINARY_DIR}_dummy_copy # dummy to ensure we run
+                   ${CMAKE_CURRENT_BINARY_DIR}/dummy_data
                    ${CMAKE_CURRENT_BINARY_DIR}/resources
                    COMMAND
                    ${CMAKE_COMMAND} -E copy_directory
                    ${CMAKE_CURRENT_SOURCE_DIR}/resources
-                   ${CMAKE_CURRENT_BINARY_DIR}/resources)
+                   ${CMAKE_CURRENT_BINARY_DIR}/resources
+                   COMMENT "copying resources"
+                   )
 
 add_custom_command(OUTPUT
-                   ${CMAKE_CURRENT_BINARY_DIR}_dummy_zip # dummy to ensure we run
                    ${CMAKE_CURRENT_BINARY_DIR}/shooteroo_${BUILD_CONFIG}.zip
                    COMMAND
-                   ${CMAKE_COMMAND} -E tar "cf" "shooteroo_${BUILD_CONFIG}.zip" --format=zip
+                   ${CMAKE_COMMAND} -E tar "cf" "${OUT_DIRECTORY}/shooteroo_${BUILD_CONFIG}.zip" --format=zip
                    "${CMAKE_CURRENT_BINARY_DIR}/shooteroo.exe"
-                   "${CMAKE_CURRENT_BINARY_DIR}/resources")
+                   "${CMAKE_CURRENT_BINARY_DIR}/resources"
+                   COMMENT "creating zip")
 
-add_custom_target(copy_resources
-                  COMMENT "copying resources"
-                  DEPENDS
-                  ${CMAKE_CURRENT_BINARY_DIR}_dummy_copy)
+add_custom_target(copy_resources DEPENDS
+                  ${CMAKE_CURRENT_BINARY_DIR}/dummy_data
+                  ${CMAKE_CURRENT_BINARY_DIR}/resources)
 
-add_custom_target(create_zip
-                  COMMENT "creating zip"
-                  DEPENDS
-                  ${CMAKE_CURRENT_BINARY_DIR}_dummy_zip
+add_custom_target(create_zip DEPENDS
                   ${CMAKE_CURRENT_BINARY_DIR}/resources
                   ${CMAKE_CURRENT_BINARY_DIR}/shooteroo_${BUILD_CONFIG}.zip
                   shooteroo)
