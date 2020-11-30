@@ -7,6 +7,7 @@
 #include "WindowsWindow.h"
 
 #include <glad/glad.h>
+#include <core/window/Input.h>
 
 #include "Macros.h"
 #include "core/logger/Logger.h"
@@ -51,11 +52,14 @@ namespace Engine {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
         // set up window
-        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode* videoMode = glfwGetVideoMode(monitor);
+        GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
         int width, height;
 
+        GLFWmonitor* targetMonitor = nullptr;
+
         if (props.fullScreen) {
+            targetMonitor = primaryMonitor;
             width = videoMode->width;
             height = videoMode->height;
             data.positionX = 0;
@@ -63,8 +67,7 @@ namespace Engine {
             data.viewportWidth = width;
             data.viewportHeight = height;
 
-            glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-            glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+            glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
             LOG_INFO("Window ({}:{}, Fullscreen)", width, height);
         }
         else {
@@ -82,7 +85,7 @@ namespace Engine {
 
         data.width = width;
         data.height = height;
-        window = glfwCreateWindow(width, height, data.name.c_str(), nullptr, nullptr);
+        window = glfwCreateWindow(width, height, data.name.c_str(), targetMonitor, nullptr);
 
         if (!props.fullScreen) {
             glfwSetWindowPos(window, data.positionX, data.positionY);
@@ -101,6 +104,8 @@ namespace Engine {
             LOG_INFO("Enabling gl multisample");
             glEnable(GL_MULTISAMPLE);
         }
+
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         glfwSetWindowUserPointer(window, &data);
         setVsync(props.vsync);
@@ -205,11 +210,20 @@ namespace Engine {
         {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-            MouseMovedEvent event((float)xPos, (float)yPos);
+            glm::vec2 pos = glm::clamp(glm::vec2(xPos, yPos), glm::vec2(0), glm::vec2(data.viewportWidth, data.viewportHeight));
+            glfwSetCursorPos(window, pos.x, pos.y);
+
+            MouseMovedEvent event((float)pos.x, (float)pos.y);
             data.eventCallback(event);
         });
 
         glfwSetWindowFocusCallback(window, [](GLFWwindow* window, int focused) {
+            if (focused) {
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            } else {
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            }
+
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
             WindowFocusEvent event(focused);

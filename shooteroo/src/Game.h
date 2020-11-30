@@ -76,13 +76,14 @@ private:
 
     GLuint quadVA, quadVB, quadIB;
 
-    Texture *grassTex, *hitboxTex, *playerTex, *bulletTex, *hostileTex, *projectileTex;
-        Util::Shader *shader;
+    Util::Shader *shader;
+    Texture *cursorTex, *grassTex, *hitboxTex, *playerTex, *bulletTex, *hostileTex, *projectileTex;
 
     void spawnProjectile();
     void spawnHostile();
 
     void renderBackground();
+    void renderCursor();
     void renderEntity(const Entity* entity, const TextureSettings* textureSettings);
 
     void renderScore();

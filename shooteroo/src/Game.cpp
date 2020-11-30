@@ -180,6 +180,7 @@ void Game::onAttach() {
     );
 
     LOG_DEBUG("Loading texture");
+    cursorTex = new Texture(R"(resources\textures\shooteroo\cursor_tex.png)");
     grassTex = new Texture(R"(resources\textures\shooteroo\grass_tex.png)");
     hitboxTex = new Texture(R"(resources\textures\shooteroo\hitbox_tex.png)");
     playerTex = new Texture(R"(resources\textures\shooteroo\player_tex.png)");
@@ -384,6 +385,12 @@ void Game::onUpdate(float dt) {
     for (auto& projectile : projectiles) {
         renderEntity(projectile, &gameSettings->projectileSettings.texture);
     }
+
+    if (Application::get().isFocused()) {
+        cursorTex->bind(0);
+        GL_CALL(glUniform1i(texLocation, 0));
+        renderCursor();
+    }
 }
 
 void Game::spawnProjectile() {
@@ -450,6 +457,24 @@ void Game::renderBackground() {
             glm::vec2(width, -height), glm::vec2(0), glm::vec2(1, 0),
             glm::vec2(width, height), glm::vec2(0), glm::vec2(1, 1),
             glm::vec2(-width, height), glm::vec2(0), glm::vec2(0, 1),
+    };
+
+    GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(EntityVertex) * 4, vertices))
+
+    // render player
+    GL_CALL(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr))
+}
+
+void Game::renderCursor() {
+    glm::vec2 pos = Input::getMousePosition();
+    pos.x *= (float) Engine::Application::get().getWindow().getViewportWidth() / BOARD_DIMENSION;
+    pos.y *= (float) Engine::Application::get().getWindow().getViewportHeight() / BOARD_DIMENSION;
+
+    EntityVertex vertices[4] = {
+            glm::vec2(0.0f, 0.0f), pos, glm::vec2(0, 1),
+            glm::vec2(0.05f, 0.0f), pos, glm::vec2(1, 1),
+            glm::vec2(0.05f, -0.05f), pos, glm::vec2(1, 0),
+            glm::vec2(0.0f, -0.05f), pos, glm::vec2(0, 0),
     };
 
     GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(EntityVertex) * 4, vertices))

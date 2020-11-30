@@ -43,20 +43,19 @@ namespace Engine {
         inline static Application& get() { return *instance; };
 
         inline bool isRunning() { return running; }
+        inline bool isFocused() { return focused; }
 
     protected:
         std::string name;
 
     private:
-        bool onMouseButtonPressedEvent(MouseButtonPressedEvent& e);
-        bool onMouseButtonReleasedEvent(MouseButtonReleasedEvent& e);
         bool onWindowResizeEvent(WindowResizeEvent& e);
         bool onWindowFocusEvent(WindowFocusEvent& e);
         bool onWindowCloseEvent(WindowCloseEvent& e);
 
         std::unique_ptr<Window> window;
         LayerStack layerStack;
-        bool running, hasFocus, wasMinimized = true, blockNextMouseButton = false;
+        bool running, focused;
         float lastFrameTime = 0.0f;
         ImGuiLayer* imGuiLayer;
 

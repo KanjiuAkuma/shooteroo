@@ -34,7 +34,7 @@ namespace Engine {
         running = true;
         while (running) {
             float timestep = 0;
-            if (hasFocus) {
+            if (focused) {
                 float time = (float) glfwGetTime();
                 timestep = time - lastFrameTime;
                 lastFrameTime = time;
@@ -66,8 +66,6 @@ namespace Engine {
         dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::onWindowCloseEvent));
         dispatcher.dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::onWindowResizeEvent));
         dispatcher.dispatch<WindowFocusEvent>(BIND_EVENT_FN(Application::onWindowFocusEvent));
-        dispatcher.dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(Application::onMouseButtonPressedEvent));
-        dispatcher.dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(Application::onMouseButtonReleasedEvent));
 
         for (auto it = layerStack.rbegin(); it != layerStack.rend(); ++it)
         {
@@ -97,40 +95,22 @@ namespace Engine {
         LOG_DEBUG("Window resized: {} x {}", e.getWidth(), e.getHeight());
         bool minimized = (e.getWidth() == 0 && e.getHeight() == 0);
         if (minimized) {
-            wasMinimized = true;
-            hasFocus = false;
+            focused = false;
         }
         return false;
     }
 
     bool Application::onWindowFocusEvent(WindowFocusEvent& e) {
         LOG_DEBUG("Window {}", e.isFocused() ? "focused" : "lost focus");
-        hasFocus = e.isFocused();
-        if (hasFocus && !wasMinimized) {
-            // just got focus
-            blockNextMouseButton = true;
-        }
-        wasMinimized = false;
+        focused = e.isFocused();
         return false;
     }
 
     bool Application::onWindowCloseEvent(WindowCloseEvent& e)
     {
-        hasFocus = false;
+        focused = false;
         running = false;
         return true;
-    }
-
-    bool Application::onMouseButtonReleasedEvent(MouseButtonReleasedEvent& e) {
-        if (blockNextMouseButton) {
-            blockNextMouseButton = false;
-            return true;
-        }
-        return false;
-    }
-
-    bool Application::onMouseButtonPressedEvent(MouseButtonPressedEvent& e) {
-        return blockNextMouseButton;
     }
 
 }
