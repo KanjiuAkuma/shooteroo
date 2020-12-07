@@ -16,7 +16,7 @@ namespace Engine { namespace Util {
         debugLogLevel = level;
     }
 
-    void openGLLogMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+    void GLAPIENTRY openGLLogMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
         switch (severity) {
             case GL_DEBUG_SEVERITY_HIGH:
                 if ((int) debugLogLevel > 0) {

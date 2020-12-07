@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <string>
+#include <sstream>
 
 #define BIT(x) (1u << x)
 
